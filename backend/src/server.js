@@ -21,6 +21,7 @@ app.use(cors({
   origin: [
     /\.vercel\.app$/,
     /\.railway\.app$/,
+    /\.onrender\.com$/,
     'http://localhost:3000',
     'http://localhost:5173',
   ],
