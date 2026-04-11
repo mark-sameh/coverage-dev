@@ -23,6 +23,7 @@ app.use(cors({
     /\.railway\.app$/,
     /\.onrender\.com$/,
     /\.fly\.dev$/,
+    /\.koyeb\.app$/,
     'http://localhost:3000',
     'http://localhost:5173',
   ],
