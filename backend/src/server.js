@@ -18,7 +18,12 @@ const app = express();
 const PORT = process.env.PORT || 3001;
 
 app.use(cors({
-  origin: [/\.vercel\.app$/, 'http://localhost:3000', 'http://localhost:5173'],
+  origin: [
+    /\.vercel\.app$/,
+    /\.railway\.app$/,
+    'http://localhost:3000',
+    'http://localhost:5173',
+  ],
   credentials: true,
 }));
 app.use(express.json());
