@@ -1,0 +1,23 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm install:*)",
+      "Bash(mkdir -p backend/src/ingestion)",
+      "Bash(cp src/ingestion/github.js backend/src/ingestion/github.js)",
+      "Bash(cp src/ingestion/parser.js backend/src/ingestion/parser.js)",
+      "Bash(cp src/index.js backend/src/index.js)",
+      "Bash(cp .env.example backend/.env.example)",
+      "Skill(claude-api)",
+      "Skill(claude-api:*)",
+      "Bash(node --input-type=module --experimental-vm-modules)",
+      "Bash(node --check src/server.js)",
+      "Bash(node --check src/ingestion/provider.js)",
+      "Bash(node --check src/ingestion/crawler.js)",
+      "Bash(node --check src/ingestion/bitbucket.js)",
+      "Bash(node --check src/analysis/coverage.js)",
+      "Bash(node --check src/ingestion/parser.js)",
+      "Bash(node --input-type=module)",
+      "Bash(node --check src/analysis/suggestions.js)"
+    ]
+  }
+}

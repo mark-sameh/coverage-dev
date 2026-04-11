@@ -1,0 +1,15 @@
+{
+  "name": "test-coverage-intelligence",
+  "version": "0.1.0",
+  "private": true,
+  "workspaces": [
+    "backend",
+    "frontend"
+  ],
+  "scripts": {
+    "backend": "npm run dev --workspace=backend",
+    "frontend": "npm run dev --workspace=frontend",
+    "analyze": "npm run analyze --workspace=backend",
+    "install:all": "npm install --workspaces"
+  }
+}

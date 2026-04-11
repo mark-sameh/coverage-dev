@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Test Coverage Intelligence — Know What's Untested Before Production Does</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0d1117;
+      --surface: #161b22;
+      --border: #30363d;
+      --accent: #58a6ff;
+      --accent-dim: #1f6feb;
+      --text: #e6edf3;
+      --text-muted: #8b949e;
+      --green: #3fb950;
+      --red: #f85149;
+      --yellow: #d29922;
+      --radius: 8px;
+      --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font);
+      line-height: 1.6;
+    }
+
+    /* ── NAV ── */
+    nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1rem 2rem;
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      background: var(--bg);
+      z-index: 10;
+    }
+    .logo {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--text);
+      letter-spacing: -0.02em;
+    }
+    .logo span { color: var(--accent); }
+    .nav-cta {
+      background: var(--accent-dim);
+      color: var(--text);
+      border: none;
+      padding: 0.45rem 1rem;
+      border-radius: var(--radius);
+      font-size: 0.875rem;
+      cursor: pointer;
+      text-decoration: none;
+      transition: background 0.15s;
+    }
+    .nav-cta:hover { background: var(--accent); color: #000; }
+
+    /* ── HERO ── */
+    .hero {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 5rem 2rem 4rem;
+      text-align: center;
+    }
+    .badge {
+      display: inline-block;
+      background: #1c2d1e;
+      color: var(--green);
+      border: 1px solid #2ea04326;
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 0.3rem 0.75rem;
+      border-radius: 20px;
+      letter-spacing: 0.04em;
+      margin-bottom: 1.5rem;
+      text-transform: uppercase;
+    }
+    h1 {
+      font-size: clamp(2rem, 5vw, 3.25rem);
+      font-weight: 800;
+      line-height: 1.15;
+      letter-spacing: -0.03em;
+      margin-bottom: 1.25rem;
+    }
+    h1 em {
+      font-style: normal;
+      color: var(--accent);
+    }
+    .subhead {
+      font-size: 1.15rem;
+      color: var(--text-muted);
+      max-width: 560px;
+      margin: 0 auto 2.5rem;
+    }
+
+    /* ── EMAIL FORM ── */
+    .form-wrap {
+      display: flex;
+      gap: 0.5rem;
+      max-width: 440px;
+      margin: 0 auto 0.75rem;
+    }
+    .form-wrap input[type="email"] {
+      flex: 1;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 0.65rem 1rem;
+      border-radius: var(--radius);
+      font-size: 0.95rem;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+    .form-wrap input[type="email"]:focus { border-color: var(--accent); }
+    .form-wrap input[type="email"]::placeholder { color: var(--text-muted); }
+    .form-wrap button {
+      background: var(--accent);
+      color: #000;
+      border: none;
+      padding: 0.65rem 1.25rem;
+      border-radius: var(--radius);
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: opacity 0.15s;
+    }
+    .form-wrap button:hover { opacity: 0.85; }
+    .form-note {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+    }
+    .success-msg {
+      display: none;
+      color: var(--green);
+      font-size: 0.95rem;
+      margin-top: 0.5rem;
+    }
+
+    /* ── SOCIAL PROOF ── */
+    .social-proof {
+      margin-top: 2.5rem;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+    .avatars {
+      display: inline-flex;
+      margin-right: 0.5rem;
+    }
+    .avatars span {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: var(--accent-dim);
+      border: 2px solid var(--bg);
+      display: inline-block;
+      margin-left: -6px;
+      font-size: 0.6rem;
+      line-height: 20px;
+      text-align: center;
+    }
+    .avatars span:first-child { margin-left: 0; }
+
+    /* ── PROBLEM SECTION ── */
+    .section {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 4rem 2rem;
+    }
+    .section-label {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--accent);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 0.75rem;
+    }
+    .section h2 {
+      font-size: clamp(1.5rem, 3vw, 2.25rem);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin-bottom: 1rem;
+    }
+    .section p {
+      color: var(--text-muted);
+      font-size: 1.05rem;
+      max-width: 600px;
+    }
+
+    /* ── PAIN CARDS ── */
+    .pain-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 1rem;
+      margin-top: 2.5rem;
+    }
+    .pain-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.25rem 1.5rem;
+    }
+    .pain-card .icon {
+      font-size: 1.5rem;
+      margin-bottom: 0.75rem;
+    }
+    .pain-card h3 {
+      font-size: 0.95rem;
+      font-weight: 600;
+      margin-bottom: 0.4rem;
+    }
+    .pain-card p {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    /* ── HOW IT WORKS ── */
+    .steps {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      margin-top: 2.5rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+    .step {
+      display: flex;
+      align-items: flex-start;
+      gap: 1.25rem;
+      padding: 1.5rem;
+      border-bottom: 1px solid var(--border);
+      background: var(--surface);
+    }
+    .step:last-child { border-bottom: none; }
+    .step-num {
+      min-width: 2rem;
+      height: 2rem;
+      background: var(--accent-dim);
+      color: var(--text);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.8rem;
+      font-weight: 700;
+      margin-top: 0.1rem;
+    }
+    .step h3 {
+      font-size: 0.95rem;
+      font-weight: 600;
+      margin-bottom: 0.25rem;
+    }
+    .step p {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    /* ── MOCK DASHBOARD PREVIEW ── */
+    .preview-wrap {
+      margin-top: 3rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+    .preview-titlebar {
+      background: var(--surface);
+      padding: 0.6rem 1rem;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+    .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--border); }
+    .dot.r { background: var(--red); }
+    .dot.y { background: var(--yellow); }
+    .dot.g { background: var(--green); }
+    .preview-body {
+      background: #010409;
+      padding: 1.5rem;
+      font-family: "SF Mono", "Fira Code", monospace;
+      font-size: 0.8rem;
+    }
+    .preview-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 0.4rem 0;
+      border-bottom: 1px solid #1c2128;
+    }
+    .preview-row:last-child { border-bottom: none; }
+    .preview-path { color: var(--text-muted); }
+    .pill {
+      padding: 0.15rem 0.5rem;
+      border-radius: 4px;
+      font-size: 0.7rem;
+      font-weight: 700;
+    }
+    .pill.high { background: #3d1a1a; color: var(--red); }
+    .pill.med  { background: #3d2e0e; color: var(--yellow); }
+    .pill.low  { background: #1c3320; color: var(--green); }
+    .risk-label { color: var(--text-muted); font-size: 0.75rem; }
+
+    /* ── CTA SECTION ── */
+    .cta-section {
+      text-align: center;
+      border-top: 1px solid var(--border);
+      padding: 5rem 2rem;
+    }
+    .cta-section h2 {
+      font-size: clamp(1.5rem, 3vw, 2.25rem);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin-bottom: 0.75rem;
+    }
+    .cta-section p {
+      color: var(--text-muted);
+      margin-bottom: 2rem;
+      font-size: 1.05rem;
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      text-align: center;
+      padding: 2rem;
+      border-top: 1px solid var(--border);
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="logo">coverage<span>.</span>dev</div>
+  <a class="nav-cta" href="#signup">Get Early Access</a>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="badge">Early Access — Free for Beta Users</div>
+  <h1>Know what's untested<br>before <em>production</em> does</h1>
+  <p class="subhead">
+    Connect your GitHub repo. In seconds, see which routes, components,
+    and user flows have zero test coverage — ranked by risk, not line %.
+  </p>
+  <form class="form-wrap" id="signup" onsubmit="handleSubmit(event)">
+    <input type="email" placeholder="you@company.com" required />
+    <!-- Replace the action URL below with your Formspree endpoint -->
+    <!-- Sign up free at formspree.io, create a form, paste the endpoint here -->
+    <button type="submit">Get Early Access</button>
+  </form>
+  <p class="form-note">No credit card. No spam. Unsubscribe anytime.</p>
+  <p class="success-msg" id="success">You're in! We'll be in touch soon.</p>
+  <div class="social-proof">
+    <span class="avatars">
+      <span>Q</span><span>A</span><span>E</span><span>+</span>
+    </span>
+    Join QA engineers getting early access
+  </div>
+</section>
+
+<!-- PROBLEM -->
+<section class="section">
+  <p class="section-label">The Problem</p>
+  <h2>Coverage % is a lie your CI pipeline tells you</h2>
+  <p>
+    80% line coverage sounds great — until a critical checkout flow breaks in production
+    because it was never touched by a test. Your suite covers <em>files</em>, not <em>risk</em>.
+  </p>
+  <div class="pain-grid">
+    <div class="pain-card">
+      <div class="icon">🔍</div>
+      <h3>You don't know what's missing</h3>
+      <p>Coverage reports show what's tested, not what matters. There's no map from "untested file" to "user impact."</p>
+    </div>
+    <div class="pain-card">
+      <div class="icon">🔥</div>
+      <h3>Bugs surface in production first</h3>
+      <p>The gap only becomes visible when customers report it. By then the cost — in trust and sprint time — is already paid.</p>
+    </div>
+    <div class="pain-card">
+      <div class="icon">📊</div>
+      <h3>No prioritisation signal</h3>
+      <p>Even teams that audit coverage manually don't have a way to rank which gaps to close first. Everything feels equal.</p>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="section" style="padding-top:0">
+  <p class="section-label">How It Works</p>
+  <h2>From repo URL to risk report in seconds</h2>
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">1</div>
+      <div>
+        <h3>Connect your GitHub repo</h3>
+        <p>Paste a repo URL. We read your Playwright spec files and your source files — no install, no CI change.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <div>
+        <h3>We map tests → source files</h3>
+        <p>Every route, component, and module is cross-referenced against your test suite to find what's covered and what's dark.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <div>
+        <h3>Risk-ranked gap report</h3>
+        <p>Uncovered files are weighted by change frequency and page importance to surface what actually needs a test written next.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">4</div>
+      <div>
+        <h3>AI-suggested test cases</h3>
+        <p>For the highest-risk gaps, get suggested test titles and scenarios ready to drop into your spec files.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- MOCK PREVIEW -->
+  <div class="preview-wrap">
+    <div class="preview-titlebar">
+      <div class="dot r"></div><div class="dot y"></div><div class="dot g"></div>
+      <span style="margin-left:0.5rem">Coverage Gap Report — acme-app</span>
+    </div>
+    <div class="preview-body">
+      <div class="preview-row">
+        <span class="preview-path">src/checkout/PaymentForm.tsx</span>
+        <span><span class="pill high">HIGH RISK</span> <span class="risk-label">0 tests · 23 changes</span></span>
+      </div>
+      <div class="preview-row">
+        <span class="preview-path">src/auth/ResetPassword.tsx</span>
+        <span><span class="pill high">HIGH RISK</span> <span class="risk-label">0 tests · 17 changes</span></span>
+      </div>
+      <div class="preview-row">
+        <span class="preview-path">src/onboarding/StepThree.tsx</span>
+        <span><span class="pill med">MEDIUM</span> <span class="risk-label">1 test · 11 changes</span></span>
+      </div>
+      <div class="preview-row">
+        <span class="preview-path">src/dashboard/AnalyticsChart.tsx</span>
+        <span><span class="pill med">MEDIUM</span> <span class="risk-label">0 tests · 8 changes</span></span>
+      </div>
+      <div class="preview-row">
+        <span class="preview-path">src/profile/AvatarUpload.tsx</span>
+        <span><span class="pill low">LOW</span> <span class="risk-label">2 tests · 2 changes</span></span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- BOTTOM CTA -->
+<section class="cta-section">
+  <h2>Be first to know when we launch</h2>
+  <p>We're onboarding QA teams in order of signup. Grab your spot.</p>
+  <form class="form-wrap" style="margin:0 auto" onsubmit="handleSubmit(event)">
+    <input type="email" placeholder="you@company.com" required />
+    <button type="submit">Get Early Access</button>
+  </form>
+  <p class="form-note" style="margin-top:0.75rem">No credit card. No spam. Unsubscribe anytime.</p>
+</section>
+
+<footer>
+  &copy; 2026 coverage.dev &mdash; Built by QA engineers, for QA engineers.
+</footer>
+
+<script>
+  function handleSubmit(e) {
+    e.preventDefault();
+    const email = e.target.querySelector('input[type="email"]').value;
+
+    // TODO: replace this URL with your Formspree endpoint
+    // Sign up at formspree.io → New Form → copy the action URL
+    const FORMSPREE_URL = 'https://formspree.io/f/YOUR_FORM_ID';
+
+    if (FORMSPREE_URL.includes('YOUR_FORM_ID')) {
+      // Dev mode: just log and show success UI
+      console.log('Email captured (dev mode):', email);
+      showSuccess(e.target);
+      return;
+    }
+
+    fetch(FORMSPREE_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      body: JSON.stringify({ email }),
+    })
+      .then(r => r.json())
+      .then(data => {
+        if (data.ok) showSuccess(e.target);
+        else alert('Something went wrong. Please try again.');
+      })
+      .catch(() => alert('Network error. Please try again.'));
+  }
+
+  function showSuccess(form) {
+    form.style.display = 'none';
+    const msg = document.getElementById('success') || form.nextElementSibling.nextElementSibling;
+    if (msg) msg.style.display = 'block';
+  }
+</script>
+</body>
+</html>
