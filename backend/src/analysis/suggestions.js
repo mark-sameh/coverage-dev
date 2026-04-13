@@ -7,7 +7,7 @@
  */
 
 const MAX_SUGGESTIONS = 5;
-const GEMINI_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent';
+const GEMINI_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent';
 
 // ── Framework-specific prompt instructions ────────────────────────────────────
 
