@@ -1,14 +1,13 @@
 /**
  * AI-powered test suggestions.
  *
- * For HIGH and MEDIUM risk untested routes, calls Claude to generate
+ * For HIGH and MEDIUM risk untested routes, calls Gemini Flash to generate
  * ready-to-use test snippets in the correct framework syntax.
  * Returns null if no API key is set.
  */
 
-import Anthropic from '@anthropic-ai/sdk';
-
 const MAX_SUGGESTIONS = 5;
+const GEMINI_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent';
 
 // ── Framework-specific prompt instructions ────────────────────────────────────
 
@@ -63,7 +62,7 @@ const DEFAULT_FRAMEWORK_KEY = 'cypress';
 /**
  * @param {Array<{route:string, source:string, risk:string}>} gaps
  * @param {'cypress'|'cypress-cucumber'|'playwright'|'unknown'} framework
- * @param {string|undefined} apiKey - ANTHROPIC_API_KEY
+ * @param {string|undefined} apiKey - GEMINI_API_KEY
  * @returns {Promise<Array<{route:string,risk:string,description:string,testCode:string}>|null>}
  */
 export async function generateSuggestions(gaps, framework, apiKey) {
@@ -74,8 +73,6 @@ export async function generateSuggestions(gaps, framework, apiKey) {
     .slice(0, MAX_SUGGESTIONS);
 
   if (priorityGaps.length === 0) return [];
-
-  const client = new Anthropic({ apiKey });
 
   const fwKey = FRAMEWORK_INSTRUCTIONS[framework] ? framework : DEFAULT_FRAMEWORK_KEY;
   const { label, codeInstruction } = FRAMEWORK_INSTRUCTIONS[fwKey];
@@ -100,14 +97,19 @@ ${codeInstruction}
 
 Focus on the most critical happy-path scenario for each route. Use realistic but generic test data.`;
 
-  const response = await client.messages.create({
-    model: 'claude-opus-4-6',
-    max_tokens: 16000,
-    thinking: { type: 'adaptive' },
-    messages: [{ role: 'user', content: prompt }],
+  const res = await fetch(`${GEMINI_URL}?key=${apiKey}`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      contents: [{ parts: [{ text: prompt }] }],
+      generationConfig: { maxOutputTokens: 8192 },
+    }),
   });
 
-  const text = response.content.find((b) => b.type === 'text')?.text ?? '';
+  if (!res.ok) throw new Error(`Gemini API error: ${res.status} ${await res.text()}`);
+
+  const data = await res.json();
+  const text = data.candidates?.[0]?.content?.parts?.[0]?.text ?? '';
 
   try {
     // Strip any accidental markdown fences before parsing

@@ -60,7 +60,7 @@ app.post('/api/analyze', async (req, res) => {
         specPath,
         coverageType,
         token: process.env.GITHUB_TOKEN,
-        anthropicKey: process.env.ANTHROPIC_API_KEY,
+        geminiKey: process.env.GEMINI_API_KEY,
       });
     } else {
       let normalizedAppRepos, normalizedTestRepo;
@@ -89,7 +89,7 @@ app.post('/api/analyze', async (req, res) => {
         specPath,
         coverageType,
         token: process.env.GITHUB_TOKEN,
-        anthropicKey: process.env.ANTHROPIC_API_KEY,
+        geminiKey: process.env.GEMINI_API_KEY,
       });
     }
 
@@ -112,5 +112,5 @@ app.get('/api/health', (_req, res) => res.json({ ok: true }));
 app.listen(PORT, () => {
   console.log(`TCI backend  : http://localhost:${PORT}`);
   console.log(`GitHub token : ${process.env.GITHUB_TOKEN ? 'YES' : 'NO'}`);
-  console.log(`Anthropic key: ${process.env.ANTHROPIC_API_KEY ? 'YES (AI suggestions enabled)' : 'NO'}`);
+  console.log(`Gemini key   : ${process.env.GEMINI_API_KEY ? 'YES (AI suggestions enabled)' : 'NO'}`);
 });

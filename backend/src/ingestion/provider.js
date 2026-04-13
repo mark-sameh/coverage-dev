@@ -115,7 +115,7 @@ async function initRepo(repoInput, token) {
  * @param {string}   opts.testRepo      - repo containing spec/test files
  * @param {string}  [opts.specPath]     - subdirectory filter for specs
  * @param {string}  [opts.token]        - GitHub token or Bitbucket app password
- * @param {string}  [opts.anthropicKey] - Anthropic API key for AI suggestions
+ * @param {string}  [opts.geminiKey]    - Gemini API key for AI suggestions
  * @returns {Promise<{
  *   provider: string,
  *   repo: string,
@@ -125,7 +125,7 @@ async function initRepo(repoInput, token) {
  *   suggestions: Array|null,
  * }>}
  */
-export async function analyzeRepo({ appRepos, testRepo, specPath = '', token, anthropicKey, coverageType = 'full' }) {
+export async function analyzeRepo({ appRepos, testRepo, specPath = '', token, geminiKey, coverageType = 'full' }) {
   console.log('[analyze] START  appRepos=%j  testRepo=%s  coverageType=%s', appRepos, testRepo, coverageType);
 
   // Deduplicate URLs so we don't fetch the same repo twice (single mode)
@@ -215,7 +215,7 @@ export async function analyzeRepo({ appRepos, testRepo, specPath = '', token, an
   const framework = Object.entries(frameworkCounts).sort((a, b) => b[1] - a[1])[0]?.[0] ?? 'unknown';
 
   console.log('[analyze] 5/5  Generating AI suggestions (framework=%s)', framework);
-  const suggestions = await generateSuggestions(coverage.gaps, framework, anthropicKey);
+  const suggestions = await generateSuggestions(coverage.gaps, framework, geminiKey);
   console.log('[analyze] 5/5  Suggestions:', suggestions === null ? 'disabled (no API key)' : suggestions.length);
 
   // Build combined labels for response metadata
@@ -242,9 +242,9 @@ export async function analyzeRepo({ appRepos, testRepo, specPath = '', token, an
  * @param {string}  opts.testRepo      - repo containing spec/test files
  * @param {string} [opts.specPath]     - subdirectory filter for specs
  * @param {string} [opts.token]        - GitHub/Bitbucket token
- * @param {string} [opts.anthropicKey] - Anthropic API key
+ * @param {string} [opts.geminiKey]    - Gemini API key
  */
-export async function analyzeWebsite({ siteUrl, testRepo, specPath = '', token, anthropicKey, coverageType = 'full' }) {
+export async function analyzeWebsite({ siteUrl, testRepo, specPath = '', token, geminiKey, coverageType = 'full' }) {
   console.log('[analyze] START (website mode)  siteUrl=%s  testRepo=%s  coverageType=%s', siteUrl, testRepo, coverageType);
 
   // ── Init test repo ──────────────────────────────────────────────────────────
@@ -300,7 +300,7 @@ export async function analyzeWebsite({ siteUrl, testRepo, specPath = '', token, 
   const framework = Object.entries(frameworkCounts).sort((a, b) => b[1] - a[1])[0]?.[0] ?? 'unknown';
 
   console.log('[analyze] 5/5  Generating AI suggestions (framework=%s)', framework);
-  const suggestions = await generateSuggestions(coverage.gaps, framework, anthropicKey);
+  const suggestions = await generateSuggestions(coverage.gaps, framework, geminiKey);
   console.log('[analyze] 5/5  Suggestions:', suggestions === null ? 'disabled' : suggestions.length);
 
   console.log('[analyze] DONE');

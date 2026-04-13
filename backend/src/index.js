@@ -12,8 +12,8 @@ const tokenLoaded = !!process.env.GITHUB_TOKEN;
 console.log(`GitHub token  : ${tokenLoaded ? 'YES' : 'NO — create backend/.env from .env.example'}`);
 if (!tokenLoaded) console.warn('Warning: unauthenticated GitHub API = 60 req/hr limit');
 
-const anthropicLoaded = !!process.env.ANTHROPIC_API_KEY;
-console.log(`Anthropic key : ${anthropicLoaded ? 'YES (AI suggestions enabled)' : 'NO  (add ANTHROPIC_API_KEY to .env to enable AI suggestions)'}\n`);
+const geminiLoaded = !!process.env.GEMINI_API_KEY;
+console.log(`Gemini key    : ${geminiLoaded ? 'YES (AI suggestions enabled)' : 'NO  (add GEMINI_API_KEY to .env to enable AI suggestions)'}\n`);
 
 // Accept a repo URL as a CLI argument, or fall back to the env var
 const repoInput = process.argv[2] || process.env.REPO || '';
@@ -35,7 +35,7 @@ async function run() {
     repoInput,
     specPath,
     token: process.env.GITHUB_TOKEN,
-    anthropicKey: process.env.ANTHROPIC_API_KEY,
+    geminiKey: process.env.GEMINI_API_KEY,
   });
 
   console.log(`Provider : ${provider}`);
@@ -90,7 +90,7 @@ function printSuggestions(suggestions) {
   console.log('='.repeat(60));
 
   if (suggestions === null) {
-    console.log('Add ANTHROPIC_API_KEY to backend/.env to enable AI-generated test suggestions.');
+    console.log('Add GEMINI_API_KEY to backend/.env to enable AI-generated test suggestions.');
     return;
   }
   if (suggestions.length === 0) {
