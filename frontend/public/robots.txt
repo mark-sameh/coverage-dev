@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://frontend-five-silk-li8ir28u2o.vercel.app/sitemap.xml
